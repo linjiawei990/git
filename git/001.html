@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深职e家技术部第一次考核</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+      padding-top: 40px;
+    }
+
+    h1 {
+      color: #fff;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      padding: 30px;
+      text-align: center;
+      width: 340px;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    img {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 10px;
+      border: 3px solid #74ebd5;
+    }
+
+    input {
+      width: 70%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      background-color: #74ebd5;
+      border: none;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #60c9c0;
+    }
+
+    .info {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .info p {
+      margin: 6px 0;
+    }
+
+    .board {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      width: 340px;
+      padding: 20px;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    .board h2 {
+      text-align: center;
+      margin-top: 0;
+      color: #555;
+    }
+
+    textarea {
+      width: 100%;
+      height: 60px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      padding: 8px;
+      resize: none;
+      font-size: 14px;
+    }
+
+    .msg-list {
+      margin-top: 15px;
+      max-height: 220px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .msg {
+      background: #f2f9ff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      word-wrap: break-word;
+      border-left: 4px solid #74ebd5;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    audio {
+      margin-top: 10px;
+      outline: none;
+      width: 280px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .clear-btn {
+      background-color: #f56c6c;
+    }
+
+    .clear-btn:hover {
+      background-color: #d95454;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>QQ 昵称查询</h1>
+  <div class="card">
+    <img id="avatar" src="https://q1.qlogo.cn/g?b=qq&nk=10000&s=100" alt="头像加载中">
+    <div>
+      <input type="number" id="qq" placeholder="请输入 QQ 号">
+      <button id="btn">查询昵称</button>
+    </div>
+    <div class="info">
+      <p>我是25软件2班的林佳伟我的QQ昵称为：<span id="nick">--</span></p>
+    <!-- 必读-->
+    <!-- 修改为自己的信息 -->
+    <!-- 保存文件 打开文件  输入自己的qq号查看变化 -->
+    <!-- 将页面截图 重命名为学号.png  上传到gitee -->
+    </div>
+  </div>
+  <div class="board">
+    <h2>留言板 💬</h2>
+    <p style="color:#777; font-size:14px; margin-bottom:8px;">
+      💡 提示：在留言板上回答问题，以及你想说的一些~
+    </p>
+    <textarea id="msgInput" placeholder="请输入你的回答和你想说的话，按下发送留言可以在页面下方显示和将留言保存至本端浏览器！！"></textarea>
+    <div class="btn-group">
+      <button id="sendBtn">发送留言</button>
+      <button id="clearBtn" class="clear-btn">清空留言</button>
+    </div>
+    <div class="msg-list" id="msgList"></div>
+  </div>
+  <audio id="bgm" controls autoplay muted loop oncanplay="this.muted=false">
+  <source src="http://music.163.com/song/media/outer/url?id=1391726352.mp3" type="audio/mp3">
+  你的浏览器不支持音频播放。
+  </audio>
+  <footer>© 2025 QQ昵称查询 + 留言板 + 播放音乐代码实现</footer>
+  <script>
+    function portraitCallBack(data) {
+      window.qqPortraitData = data;
+    }
+    async function getQQInfo(qq) {
+      const avatarEl = document.getElementById("avatar");
+      const nickEl = document.getElementById("nick");
+      avatarEl.src = `https://q1.qlogo.cn/g?b=qq&nk=${qq}&s=640`;
+      nickEl.innerText = "加载中...";
+      const old = document.getElementById("qq_script");
+      if (old) old.remove();
+      const script = document.createElement("script");
+      script.id = "qq_script";
+      script.src = `https://users.qzone.qq.com/fcg-bin/cgi_get_portrait.fcg?uins=${qq}`;
+      document.body.appendChild(script);
+      let waited = 0;
+      const timer = setInterval(() => {
+        waited += 100;
+        if (window.qqPortraitData && window.qqPortraitData[qq]) {
+          clearInterval(timer);
+          const info = window.qqPortraitData[qq];
+          const nickname = info[6] || info[1] || "未知";
+          nickEl.innerText = nickname;
+          window.qqPortraitData = null;
+        } else if (waited >= 3000) {
+          clearInterval(timer);
+          nickEl.innerText = "获取失败";
+          window.qqPortraitData = null;
+        }
+      }, 100);
+    }
+    document.getElementById("btn").onclick = function() {
+      const qq = document.getElementById("qq").value.trim();
+      if (!qq) {
+        alert("请输入 QQ 号！");
+        return;
+      }
+      getQQInfo(qq);
+    };
+    const msgInput = document.getElementById("msgInput");
+    const msgList = document.getElementById("msgList");
+    const sendBtn = document.getElementById("sendBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const STORAGE_KEY = "qq留言板";
+    function loadMessages() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      let list = [];
+      if (saved) {
+        try { list = JSON.parse(saved); } catch(e){}
+      }
+      return list;
+    }
+    function renderMessages() {
+      msgList.innerHTML = "";
+      const messages = loadMessages();
+      const defaultMsg = document.createElement("div");
+      defaultMsg.className = "msg";
+      defaultMsg.style.background = "#fff9e6";
+      defaultMsg.style.borderLeft = "4px solid #ffcc66";
+      const questions = [
+      "📢 问题：",
+      "1. 你目前掌握哪种语言(需要会写出代码)？",
+      "2. 你是如何关注到深职e家的招新以及产生想要加入技术部的想法？",
+      "3. 你对加入技术部有什么期待(目标，方向)？",
+      "4. 你了解开发吗(说出具体开发流程)？"
+      ];
+      defaultMsg.innerHTML = questions.join("<br>");
+      msgList.appendChild(defaultMsg);
+
+      messages.forEach(m => {
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.innerText = m;
+        msgList.appendChild(div);
+      });
+    }
+    function saveMessage(text) {
+      const list = loadMessages();
+      list.unshift(text);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+    renderMessages();
+    sendBtn.onclick = () => {
+      const text = msgInput.value.trim();
+      if (!text) return alert("请输入留言内容！");
+      const time = new Date().toLocaleTimeString();
+      saveMessage(`${time}：${text}`);
+      msgInput.value = "";
+      renderMessages();
+    };
+    clearBtn.onclick = () => {
+      if (confirm("确定要清空所有留言吗？此操作不可恢复！")) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderMessages();
+      }
+    };
+  </script>
+</body>
+</html>
